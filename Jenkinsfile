@@ -1,49 +1,21 @@
 pipeline {
+    agent any
 
-  environment {
-    dockerimagename = "bravinwasike/react-app"
-    dockerImage = ""
-  }
-
-  agent any
-
-  stages {
-
-    stage('Checkout Source') {
-      steps {
-        git 'https://github.com/vladreamer/jenkins-kubernetes-deployment.git'
-      }
-    }
-
-    stage('Build image') {
-      steps{
-        script {
-          dockerImage = docker.build dockerimagename
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building..'
+            }
         }
-      }
-    }
-
-    stage('Pushing Image') {
-      environment {
-               registryCredential = 'dockerhub-credentials'
-           }
-      steps{
-        script {
-          docker.withRegistry( 'https://registry.hub.docker.com', registryCredential ) {
-            dockerImage.push("latest")
-          }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+            }
         }
-      }
-    }
-
-    stage('Deploying React.js container to Kubernetes') {
-      steps {
-        script {
-          kubernetesDeploy(configs: "deployment.yaml", "service.yaml")
+        stage('Deploy') {
+            steps {
+                echo 'Deploying....'
+            }
         }
-      }
     }
-
-  }
-
 }
